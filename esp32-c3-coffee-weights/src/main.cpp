@@ -32,7 +32,7 @@ void screenTask(void *pvParameters)
   for (;;)
   {
     screen.draw(scale.getWeightLabel());
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(300 / portTICK_PERIOD_MS);
   }
 }
 
