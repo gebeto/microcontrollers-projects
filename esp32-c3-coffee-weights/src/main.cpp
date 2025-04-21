@@ -1,10 +1,36 @@
-
 #include <U8g2lib.h>
 #include <string>
 #include <stdio.h>
 
 #include "CoffeeScale.h"
 #include "Screen.h"
+
+// #include <Arduino.h>
+// #include <Buzzer.h>
+// #define BUZZER_PIN 2
+
+// Buzzer::Melody_t myMelody{.nbNotes = 3,
+//                               .duration = {400, 400, 800},
+//                               .frequency = {D4_NOTE_FREQ, E4_NOTE_FREQ, G4_NOTE_FREQ}};
+// Buzzer myBuzzer;
+// TaskHandle_t beeperTaskHandle;
+
+// void beeperTask(void *parameters)
+// {
+//   myBuzzer.init(BUZZER_PIN);
+//   myBuzzer.setMelody(&myMelody);
+
+//   for (;;)
+//   {
+//     if (myBuzzer.hasMelody())
+//     {
+//       Serial.println("I print while buzzer plays!");
+//     }
+
+//     myBuzzer.step();
+//     vTaskDelay(1000 / portTICK_PERIOD_MS);
+//   }
+// }
 
 #define DOUT_PIN 0
 #define SCK_PIN 8
@@ -40,6 +66,7 @@ void setup(void)
 {
   Serial.begin(9600);
 
+  // xTaskCreatePinnedToCore(beeperTask, "beeperTask", 2048, NULL, 1, &beeperTaskHandle, 0);
   xTaskCreatePinnedToCore(weightsTask, "weightsTask", 2048, NULL, 1, &weightTaskHandle, 0);
   xTaskCreatePinnedToCore(screenTask, "screenTask", 2048, NULL, 1, &screenTaskHandle, 0);
 }
