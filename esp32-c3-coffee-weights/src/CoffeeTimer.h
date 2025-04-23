@@ -1,14 +1,13 @@
 #include <iomanip>
 
-
 class CoffeeTimer
 {
 
 private:
     bool started;
+    int seconds;
 
 public:
-    int seconds;
     CoffeeTimer(int initialSeconds = 0)
     {
         this->started = false;
