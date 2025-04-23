@@ -4,6 +4,7 @@
 
 #include "CoffeeScale.h"
 #include "Screen.h"
+#include "CoffeeTimer.h"
 
 // #include <Arduino.h>
 // #include <Buzzer.h>
@@ -32,6 +33,18 @@
 //   }
 // }
 
+CoffeeTimer coffeeTimer = CoffeeTimer(0);
+TaskHandle_t timerTaskHandle;
+void timerTask(void *pvParameters)
+{
+  coffeeTimer.start();
+  for (;;)
+  {
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    coffeeTimer.tick();
+  }
+}
+
 #define DOUT_PIN 0
 #define SCK_PIN 8
 CoffeeScale scale = CoffeeScale(DOUT_PIN, SCK_PIN);
@@ -57,16 +70,18 @@ void screenTask(void *pvParameters)
   screen.start();
   for (;;)
   {
-    screen.draw(scale.getWeightLabel());
-    vTaskDelay(300 / portTICK_PERIOD_MS);
+    screen.draw(scale.getWeightLabel(), coffeeTimer.getLabel());
+    vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
 
 void setup(void)
 {
-  Serial.begin(9600);
+  // Serial.begin(9600);
+  Serial.begin(115200);
 
   // xTaskCreatePinnedToCore(beeperTask, "beeperTask", 2048, NULL, 1, &beeperTaskHandle, 0);
+  xTaskCreatePinnedToCore(timerTask, "timerTask", 2048, NULL, 1, &timerTaskHandle, 0);
   xTaskCreatePinnedToCore(weightsTask, "weightsTask", 2048, NULL, 1, &weightTaskHandle, 0);
   xTaskCreatePinnedToCore(screenTask, "screenTask", 2048, NULL, 1, &screenTaskHandle, 0);
 }

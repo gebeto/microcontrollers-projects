@@ -22,13 +22,14 @@ public:
         this->u8g2.setFont(u8g2_font_ncenB08_tr);
     }
 
-    void draw(std::string weightLabel)
+    void draw(std::string weightLabel, std::string timerLabel)
     {
         this->u8g2.firstPage();
         do
         {
             std::string weightStr = "Weight: " + weightLabel;
             this->u8g2.drawStr(0, 10, weightStr.c_str());
+            this->u8g2.drawStr(0, 20, timerLabel.c_str());
         } while (this->u8g2.nextPage());
     }
 };
