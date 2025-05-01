@@ -187,6 +187,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 /*1: Show CPU usage and FPS count in the right bottom corner*/
 #define LV_USE_PERF_MONITOR     1
+#define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_MID
 
 /*1: Show the used memory and the memory fragmentation  in the left bottom corner
  * Requires LV_MEM_CUSTOM = 0*/

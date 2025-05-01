@@ -6,6 +6,10 @@
 #include <Encoder.h>
 #include <Bounce2.h>
 
+#include "pages/page_1.h"
+#include "pages/page_2.h"
+#include "pages/page_3.h"
+
 #define GFX_BL 8
 
 Arduino_DataBus *bus = new Arduino_ESP32SPI(4 /* DC */, 10 /* CS */, 1 /* SCK */, 0 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
@@ -30,7 +34,6 @@ lv_group_t *group; // Create a group object
 
 static int32_t last_encoder_value = 0; // The last encoder value
 
-lv_obj_t *page1, *page2, *page3;
 int currentPage = 1;
 bool autoScroll = true; // Automatic cycle flag
 
@@ -56,33 +59,6 @@ static void my_button_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data) {
 
 static void my_encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data) {
 
-}
-
-
-/*
-FM radio tunner is suposed to set frequency between 88.0 MHz and 104.0 MHz by 0.1MHz steps
-Rotary encoder works with integers so we will map 88.0 to 166 and then divide by 10 to get 0.1 steps
-frequency = rotaryValue / 2;
-*/
-
-
-void lv_example_page(void) {
-  page1 = lv_obj_create(NULL);
-  lv_obj_t *label1 = lv_label_create(page1);
-  lv_label_set_text(label1, "This is Page Test 1");
-  lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
-
-  page2 = lv_obj_create(NULL);
-  lv_obj_t *label2 = lv_label_create(page2);
-  lv_label_set_text(label2, "This is Page Test 2");
-  lv_obj_align(label2, LV_ALIGN_CENTER, 0, 0);
-
-  page3 = lv_obj_create(NULL);
-  lv_obj_t *label3 = lv_label_create(page3);
-  lv_label_set_text(label3, "This is Page Test 3");
-  lv_obj_align(label3, LV_ALIGN_CENTER, 0, 0);
-
-  lv_scr_load(page1); // Loading the initial page
 }
 
 
@@ -112,7 +88,13 @@ void inputTask(void *pvParameters) {
       if (currentPage > 3) {
           currentPage = 1;
       }
-      lv_scr_load(currentPage == 1 ? page1 : (currentPage == 2 ? page2 : page3));
+      if (currentPage == 1) {
+        lv_scr_load_anim(page_1_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
+      } else if (currentPage == 2) {
+        lv_scr_load_anim(page_2_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
+      } else if (currentPage == 3) {
+        lv_scr_load_anim(page_3_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
+      }
       lastTime = currentTime;
     }
 
@@ -135,7 +117,14 @@ void inputTask(void *pvParameters) {
       } else if (currentPage > 3) {
           currentPage = 1;
       }
-      lv_scr_load(currentPage == 1 ? page1 : (currentPage == 2 ? page2 : page3));
+      lv_scr_load_anim_t anim = encoder_diff == 1 ? LV_SCR_LOAD_ANIM_MOVE_LEFT : LV_SCR_LOAD_ANIM_MOVE_RIGHT;
+      if (currentPage == 1) {
+        lv_scr_load_anim(page_1_create(), anim, 300, 0, false);
+      } else if (currentPage == 2) {
+        lv_scr_load_anim(page_2_create(), anim, 300, 0, false);
+      } else if (currentPage == 3) {
+        lv_scr_load_anim(page_3_create(), anim, 300, 0, false);
+      }
       last_encoder_value = current_encoder_value;
     }
 
@@ -157,6 +146,7 @@ void setup()
   Serial.println("GFX initialized"); 
 
   lv_init();
+
   delay(10);
   Serial.println("LVGL initialized");
 
@@ -204,12 +194,8 @@ void setup()
     lv_indev_set_group(indev_button, group);
     Serial.println("Input devices initialized");
 
-    lv_example_page();
+    lv_scr_load_anim(page_1_create(), LV_SCR_LOAD_ANIM_FADE_IN, 300, 0, false);
     Serial.println("Example page loaded");
-    //lv_demo_benchmark();
-    // lv_demo_music();
-    // lv_demo_stress();
- 
   }
    
    xTaskCreatePinnedToCore(
@@ -241,17 +227,13 @@ void loop()
 }
 
 void app_main() {
-  setup(); // initial setup
+  setup();
 
     // Creating tasks
     // xTaskCreate(lvglTask, "lvglTask", 8192, NULL, 2, NULL);
     // xTaskCreate(inputTask, "inputTask", 8192, NULL, 2, NULL);
-  xTaskCreatePinnedToCore(
-  lvglTask, "lvglTask", 8192*2, NULL, 2, NULL, 1
-  );
-  xTaskCreatePinnedToCore(
-    inputTask, "inputTask", 8192*2, NULL, 2, NULL, 1
-  );
+  xTaskCreatePinnedToCore(lvglTask, "lvglTask", 8192*2, NULL, 2, NULL, 1);
+  xTaskCreatePinnedToCore(inputTask, "inputTask", 8192*2, NULL, 2, NULL, 1);
   Serial.println("Tasks created");
 }
 
