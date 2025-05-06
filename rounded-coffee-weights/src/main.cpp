@@ -13,7 +13,7 @@
 #define GFX_BL 8
 
 Arduino_DataBus *bus = new Arduino_ESP32SPI(4 /* DC */, 10 /* CS */, 1 /* SCK */, 0 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
-Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, 0 /* rotation */, true /* IPS */);
+Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, 3 /* rotation */, true /* IPS */);
 
 #define ROTARY_ENCODER_A_PIN 7
 #define ROTARY_ENCODER_B_PIN 6
