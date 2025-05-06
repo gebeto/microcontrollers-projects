@@ -19,7 +19,7 @@ Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, 3 /* rotat
 #define ROTARY_ENCODER_B_PIN 6
 #define ROTARY_ENCODER_BUTTON_PIN 9
 
-Encoder myEnc(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN);
+Encoder rotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN);
 Bounce2::Button button = Bounce2::Button();
 
 
@@ -35,7 +35,7 @@ lv_group_t *group; // Create a group object
 static int32_t last_encoder_value = 0; // The last encoder value
 
 int currentPage = 1;
-bool autoScroll = true; // Automatic cycle flag
+bool autoScroll = false; // Automatic cycle flag
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
@@ -80,35 +80,16 @@ void inputTask(void *pvParameters) {
   while (true) {
     currentTime = millis();
 
-    // Automatically cycle through pages
-    if (autoScroll && (currentTime - lastTime >= 2000)) { // It switches every 2s
-      Serial.print("Switching to page: ");
-      Serial.println(currentPage + 1); // Debugging output
-      currentPage++;
-      if (currentPage > 3) {
-          currentPage = 1;
-      }
-      if (currentPage == 1) {
-        lv_scr_load_anim(page_1_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
-      } else if (currentPage == 2) {
-        lv_scr_load_anim(page_2_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
-      } else if (currentPage == 3) {
-        lv_scr_load_anim(page_3_create(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
-      }
-      lastTime = currentTime;
-    }
-
     // Each loop reads the input device state
     button.update();
     if (button.pressed()) {
         Serial.println("Button pressed");
-        autoScroll = !autoScroll; // Toggle the auto cycling state
     }
 
-    int32_t current_encoder_value = myEnc.read() / 2;
+    int32_t current_encoder_value = rotaryEncoder.read() / 2;
     int32_t encoder_diff = current_encoder_value - last_encoder_value;
 
-    if (!autoScroll && encoder_diff != 0) {
+    if (encoder_diff != 0) {
       Serial.print("Encoder diff: ");
       Serial.println(encoder_diff);
       currentPage += encoder_diff;
@@ -156,7 +137,7 @@ void setup()
   Serial.println("btn initialized");
 
   // Initialize the rotation encoder
-  myEnc.write(0); // Initialize the value of the encoder to 0
+  rotaryEncoder.write(0); // Initialize the value of the encoder to 0
 
   disp_draw_buf1 = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * screenWidth * screenHeight / 8, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   disp_draw_buf2 = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * screenWidth * screenHeight / 8, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
@@ -198,7 +179,7 @@ void setup()
     Serial.println("Example page loaded");
   }
    
-   xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore(
     lvglTask,        // Task function
     "lvglTask",      // Task name
     8192,            // Stack size
@@ -224,16 +205,5 @@ void setup()
 void loop()
 {
   
-}
-
-void app_main() {
-  setup();
-
-    // Creating tasks
-    // xTaskCreate(lvglTask, "lvglTask", 8192, NULL, 2, NULL);
-    // xTaskCreate(inputTask, "inputTask", 8192, NULL, 2, NULL);
-  xTaskCreatePinnedToCore(lvglTask, "lvglTask", 8192*2, NULL, 2, NULL, 1);
-  xTaskCreatePinnedToCore(inputTask, "inputTask", 8192*2, NULL, 2, NULL, 1);
-  Serial.println("Tasks created");
 }
 
