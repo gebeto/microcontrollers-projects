@@ -34,6 +34,15 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
   lv_disp_flush_ready(disp);
 }
 
+// Task handler function
+void lvglTask(void *pvParameters) {
+  while (true) {
+    lv_timer_handler(); // Handle LVGL tasks
+    vTaskDelay(pdMS_TO_TICKS(5)); // delay 5ms
+  }
+}
+
+
 void setup()
 {
   // Serial.begin(115200);
@@ -60,11 +69,18 @@ void setup()
   lv_disp_drv_register(&disp_drv);
 
   ui_init();
+
+     
+  xTaskCreatePinnedToCore(
+    lvglTask,        // Task function
+    "lvglTask",      // Task name
+    8192,            // Stack size
+    NULL,            // Parameters
+    2,               // Priority
+    NULL,            // Task handle
+    1                // Run on core 1
+  );
 }
 
-void loop()
-{
-  lv_timer_handler();
-  delay(5);
-}
+void loop() {}
 
