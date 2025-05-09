@@ -11,7 +11,7 @@
 #define GFX_BL 8
 
 Arduino_DataBus *bus = new Arduino_ESP32SPI(4 /* DC */, 10 /* CS */, 1 /* SCK */, 0 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
-Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, LV_DISP_ROT_270 /* rotation */, true /* IPS */);
+Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, LV_DISP_ROT_90 /* rotation */, true /* IPS */);
 
 static uint32_t screenWidth = 240;
 static uint32_t screenHeight = 240;
