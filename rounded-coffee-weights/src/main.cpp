@@ -11,7 +11,13 @@
 #define GFX_BL 8
 
 Arduino_DataBus *bus = new Arduino_ESP32SPI(4 /* DC */, 10 /* CS */, 1 /* SCK */, 0 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
-Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, LV_DISP_ROT_90 /* rotation */, true /* IPS */);
+Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, LV_DISP_ROT_270 /* rotation */, true /* IPS */);
+
+#define ROTARY_ENCODER_A_PIN 7
+#define ROTARY_ENCODER_B_PIN 6
+
+Encoder rotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN);
+int32_t encoder_value = 0;
 
 static uint32_t screenWidth = 240;
 static uint32_t screenHeight = 240;
@@ -43,6 +49,29 @@ void lvglTask(void *pvParameters) {
 }
 
 
+// Input processing tasks
+void inputTask(void *pvParameters) {
+  Serial.println("inputTask started");
+  int32_t last_encoder_value = 0;
+
+  while (true) {
+    int32_t current_encoder_value = rotaryEncoder.read() / 2;
+    int32_t encoder_diff = current_encoder_value - last_encoder_value;
+
+    if (encoder_diff != 0) {
+      encoder_value += encoder_diff;
+      last_encoder_value = current_encoder_value;
+    }
+    
+    char label[32] = "";
+    sprintf(label, "00:%d", encoder_value);
+    lv_label_set_text(ui_TimerLabel, label);
+
+    vTaskDelay(pdMS_TO_TICKS(50)); // delay is 50 milliseconds
+  }
+}
+
+
 void setup()
 {
   // Serial.begin(115200);
@@ -50,6 +79,8 @@ void setup()
   pinMode(GFX_BL, OUTPUT);
   digitalWrite(GFX_BL, LOW);
   gfx->begin(80000000);
+
+  rotaryEncoder.write(0);
 
   lv_init();
   delay(10);
@@ -69,17 +100,10 @@ void setup()
   lv_disp_drv_register(&disp_drv);
 
   ui_init();
-
+  lv_label_set_text(ui_TimerLabel, "10:00");
      
-  xTaskCreatePinnedToCore(
-    lvglTask,        // Task function
-    "lvglTask",      // Task name
-    8192,            // Stack size
-    NULL,            // Parameters
-    2,               // Priority
-    NULL,            // Task handle
-    1                // Run on core 1
-  );
+  xTaskCreatePinnedToCore(lvglTask, "lvglTask", 8192, NULL, 2, NULL, 1);
+  xTaskCreatePinnedToCore(inputTask, "inputTask", 8192, NULL, 2, NULL, 1);
 }
 
 void loop() {}
