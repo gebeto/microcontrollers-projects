@@ -26,7 +26,9 @@ extern lv_obj_t *ui_Border;
 extern lv_obj_t *ui_MainContainer;
 extern lv_obj_t *ui_TimerAndWeightsContainer;
 extern lv_obj_t *ui_TimerLabel;
+extern lv_obj_t *ui_WeightsContainer;
 extern lv_obj_t *ui_WeightsLabel;
+extern lv_obj_t *ui_WeightsUnitsLabel;
 extern lv_obj_t *ui_Loader;
 // CUSTOM VARIABLES
 

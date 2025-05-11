@@ -18,7 +18,9 @@ lv_obj_t *ui_Border;
 lv_obj_t *ui_MainContainer;
 lv_obj_t *ui_TimerAndWeightsContainer;
 lv_obj_t *ui_TimerLabel;
+lv_obj_t *ui_WeightsContainer;
 lv_obj_t *ui_WeightsLabel;
+lv_obj_t *ui_WeightsUnitsLabel;
 lv_obj_t *ui_Loader;
 // CUSTOM VARIABLES
 

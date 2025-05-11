@@ -5,6 +5,7 @@
 #include "freertos/task.h"
 #include <Encoder.h>
 #include <Bounce2.h>
+#include <ESP32Time.h>
 
 #include "ui/ui.h"
 
@@ -18,6 +19,8 @@ Arduino_GFX *gfx = new Arduino_GC9A01(bus, GFX_NOT_DEFINED /* RST */, LV_DISP_RO
 
 Encoder rotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN);
 int32_t encoder_value = 0;
+
+ESP32Time rtc(0); 
 
 static uint32_t screenWidth = 240;
 static uint32_t screenHeight = 240;
@@ -61,10 +64,12 @@ void inputTask(void *pvParameters) {
     if (encoder_diff != 0) {
       encoder_value += encoder_diff;
       last_encoder_value = current_encoder_value;
+      rtc.setTime(0);
     }
     
     char label[32] = "";
-    sprintf(label, "00:%d", encoder_value);
+    // sprintf(label, "00:%d", encoder_value);
+    sprintf(label, rtc.getTime("%M:%S").c_str());
     lv_label_set_text(ui_TimerLabel, label);
 
     vTaskDelay(pdMS_TO_TICKS(50)); // delay is 50 milliseconds

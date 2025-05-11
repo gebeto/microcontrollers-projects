@@ -63,14 +63,31 @@ lv_label_set_text(ui_TimerLabel,"03:00");
 lv_obj_clear_flag( ui_TimerLabel, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE );    /// Flags
 lv_obj_set_style_text_font(ui_TimerLabel, &lv_font_montserrat_48, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-ui_WeightsLabel = lv_label_create(ui_TimerAndWeightsContainer);
+ui_WeightsContainer = lv_obj_create(ui_TimerAndWeightsContainer);
+lv_obj_remove_style_all(ui_WeightsContainer);
+lv_obj_set_width( ui_WeightsContainer, 100);
+lv_obj_set_height( ui_WeightsContainer, 35);
+lv_obj_set_x( ui_WeightsContainer, 16 );
+lv_obj_set_y( ui_WeightsContainer, 16 );
+lv_obj_set_align( ui_WeightsContainer, LV_ALIGN_CENTER );
+lv_obj_set_flex_flow(ui_WeightsContainer,LV_FLEX_FLOW_ROW);
+lv_obj_set_flex_align(ui_WeightsContainer, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER);
+lv_obj_clear_flag( ui_WeightsContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+
+ui_WeightsLabel = lv_label_create(ui_WeightsContainer);
 lv_obj_set_width( ui_WeightsLabel, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_WeightsLabel, LV_SIZE_CONTENT);   /// 1
-lv_obj_set_x( ui_WeightsLabel, 0 );
-lv_obj_set_y( ui_WeightsLabel, 20 );
 lv_obj_set_align( ui_WeightsLabel, LV_ALIGN_CENTER );
 lv_label_set_text(ui_WeightsLabel,"100.1");
 lv_obj_set_style_text_font(ui_WeightsLabel, &lv_font_montserrat_24, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_WeightsUnitsLabel = lv_label_create(ui_WeightsContainer);
+lv_obj_set_width( ui_WeightsUnitsLabel, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_WeightsUnitsLabel, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_WeightsUnitsLabel, 32 );
+lv_obj_set_y( ui_WeightsUnitsLabel, 13 );
+lv_obj_set_align( ui_WeightsUnitsLabel, LV_ALIGN_CENTER );
+lv_label_set_text(ui_WeightsUnitsLabel,"g");
 
 ui_Loader = lv_spinner_create(ui_MainContainer,1000,90);
 lv_obj_set_width( ui_Loader, 30);
