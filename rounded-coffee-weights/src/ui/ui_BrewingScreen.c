@@ -14,7 +14,7 @@ lv_obj_set_style_bg_opa(ui_BrewingScreen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_Fill = lv_obj_create(ui_BrewingScreen);
 lv_obj_set_width( ui_Fill, 240);
-lv_obj_set_height( ui_Fill, 16);
+lv_obj_set_height( ui_Fill, 199);
 lv_obj_set_align( ui_Fill, LV_ALIGN_BOTTOM_MID );
 lv_obj_clear_flag( ui_Fill, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_radius(ui_Fill, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -43,15 +43,15 @@ lv_obj_clear_flag( ui_MainContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLA
 
 ui_TimerAndWeightsContainer = lv_obj_create(ui_MainContainer);
 lv_obj_remove_style_all(ui_TimerAndWeightsContainer);
-lv_obj_set_width( ui_TimerAndWeightsContainer, 160);
-lv_obj_set_height( ui_TimerAndWeightsContainer, 105);
+lv_obj_set_width( ui_TimerAndWeightsContainer, 148);
+lv_obj_set_height( ui_TimerAndWeightsContainer, 86);
 lv_obj_set_align( ui_TimerAndWeightsContainer, LV_ALIGN_CENTER );
 lv_obj_set_flex_flow(ui_TimerAndWeightsContainer,LV_FLEX_FLOW_COLUMN);
 lv_obj_set_flex_align(ui_TimerAndWeightsContainer, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 lv_obj_clear_flag( ui_TimerAndWeightsContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_radius(ui_TimerAndWeightsContainer, 12, LV_PART_MAIN| LV_STATE_DEFAULT);
 lv_obj_set_style_bg_color(ui_TimerAndWeightsContainer, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_bg_opa(ui_TimerAndWeightsContainer, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+lv_obj_set_style_bg_opa(ui_TimerAndWeightsContainer, 10, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_TimerLabel = lv_label_create(ui_TimerAndWeightsContainer);
 lv_obj_set_width( ui_TimerLabel, LV_SIZE_CONTENT);  /// 1
@@ -92,8 +92,8 @@ lv_label_set_text(ui_WeightsUnitsLabel,"g");
 ui_Loader = lv_spinner_create(ui_MainContainer,1000,90);
 lv_obj_set_width( ui_Loader, 30);
 lv_obj_set_height( ui_Loader, 30);
-lv_obj_set_x( ui_Loader, -4 );
-lv_obj_set_y( ui_Loader, 52 );
+lv_obj_set_x( ui_Loader, 7 );
+lv_obj_set_y( ui_Loader, 74 );
 lv_obj_set_align( ui_Loader, LV_ALIGN_CENTER );
 lv_obj_clear_flag( ui_Loader, LV_OBJ_FLAG_CLICKABLE );    /// Flags
 lv_obj_set_style_arc_width(ui_Loader, 5, LV_PART_MAIN| LV_STATE_DEFAULT);
