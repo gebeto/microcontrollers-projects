@@ -25,7 +25,7 @@ void renderScreen(void *pvParameters) {
     u8g2.drawStr(x, 20, message);
     u8g2.sendBuffer();
     x += 1;
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(60));
   }
 }
 
@@ -40,7 +40,7 @@ void setup(void) {
     "Render",     /* name of task. */
     10000,        /* Stack size of task */
     NULL,         /* parameter of the task */
-    1,            /* priority of the task */
+    2,            /* priority of the task */
     NULL);        /* Task handle to keep track of created task */
 }
 
