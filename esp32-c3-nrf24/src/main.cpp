@@ -28,10 +28,8 @@ void build_packet(uint32_t id, uint16_t command, uint8_t counter, uint8_t* packe
     // Counter (1 byte)
     packet[12] = counter;
     // Command (2 bytes, big endian)
-    // packet[13] = (command >> 8) & 0xFF;
-    // packet[14] = command & 0xFF;
-    packet[13] = 0x01 & 0xFF;
-    packet[14] = 0x00 & 0xFF;
+    packet[13] = (command >> 8) & 0xFF;
+    packet[14] = command & 0xFF;
     // CRC16 (2 bytes, big endian)
     CRC16 crc;
     crc.reset();
