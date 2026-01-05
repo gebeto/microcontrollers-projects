@@ -4,14 +4,10 @@
 #include "TicTacToe.cpp"
 
 void drawGrid();
-void recalculateHighlighted();
 
 m5::touch_detail_t touchDetail;
-
-bool pressHandled = false;
 m5::touch_detail_t pressedDetails;
 
-static int highlighted = -1;
 static bool isStateChanged = true;
 
 TicTacToe game;
@@ -41,25 +37,9 @@ void loop(void)
 
     if (isStateChanged && !touchDetail.isPressed())
     {
-        recalculateHighlighted();
+        game.recalculateHighlighted(pressedDetails);
         drawGrid();
         isStateChanged = false;
-    }
-}
-
-void recalculateHighlighted()
-{
-    for (int col = 0, itemIndex = 0; col < 3; col++)
-    {
-        for (int row = 0; row < 3; row++, itemIndex++)
-        {
-            GridCell cell = game.getCell(itemIndex);
-            if (cell.pointInRect(pressedDetails.x, pressedDetails.y))
-            {
-                Serial.printf("Pressed Item! Row: %d, Col: %d \n", row, col);
-                highlighted = itemIndex;
-            }
-        }
     }
 }
 
@@ -71,7 +51,7 @@ void drawGrid()
     {
         GridCell rect = game.getCell(index);
 
-        if (index == highlighted)
+        if (index == game.highlightedIndex)
         {
             M5.Display.fillRect(rect.x, rect.y, cellSize, cellSize, color);
         }

@@ -72,6 +72,7 @@ class TicTacToe
 {
 public:
     std::vector<GridCell> cells = {};
+    int highlightedIndex = -1;
 
     TicTacToe()
     {
@@ -86,8 +87,6 @@ public:
             {
                 int boxX = offset + row * (cellSize + offset);
                 int boxY = offset + col * (cellSize + offset);
-                // int boxEndX = boxX + cellSize;
-                // int boxEndY = boxY + cellSize;
 
                 this->cells.push_back(GridCell(boxX, boxY, cellSize, cellSize));
             }
@@ -97,5 +96,21 @@ public:
     GridCell getCell(int index)
     {
         return this->cells[index];
+    }
+
+    void recalculateHighlighted(m5::touch_detail_t pressedDetails)
+    {
+        for (int col = 0, itemIndex = 0; col < 3; col++)
+        {
+            for (int row = 0; row < 3; row++, itemIndex++)
+            {
+                GridCell cell = this->getCell(itemIndex);
+                if (cell.pointInRect(pressedDetails.x, pressedDetails.y))
+                {
+                    Serial.printf("Pressed Item! Row: %d, Col: %d \n", row, col);
+                    this->highlightedIndex = itemIndex;
+                }
+            }
+        }
     }
 };
