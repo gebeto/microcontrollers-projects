@@ -45,19 +45,72 @@ void loop(void)
     }
 }
 
-struct Rect
+struct Point
 {
     int x;
     int y;
-    int xEnd;
-    int yEnd;
+};
+
+class GridCell
+{
+public:
+    int x;
+    int y;
+    int width;
+    int height;
+
+    GridCell()
+    {
+        this->x = 0;
+        this->y = 0;
+        this->width = 0;
+        this->height = 0;
+    }
+
+    GridCell(int x, int y, int width, int height)
+    {
+        this->x = x;
+        this->y = y;
+        this->width = width;
+        this->height = height;
+    }
+
+    int getEndX()
+    {
+        return this->x + this->width;
+    }
+
+    int getEndY()
+    {
+        return this->y + this->height;
+    }
+
+    bool pointInRect(int x, int y)
+    {
+        if (x > this->x && x < this->getEndX() && y > this->y && y < this->getEndY())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool pointInRect(Point point)
+    {
+        if (point.x > this->x && point.x < this->getEndX() && point.y > this->y && point.y < this->getEndY())
+        {
+            return true;
+        }
+
+        return false;
+    }
 };
 
 void drawGrid()
 {
     M5.Display.waitDisplay();
 
-    Rect grid[9];
+    GridCell grid[9];
     for (int col = 0, itemsIndex = 0; col < 3; col++)
     {
         for (int row = 0; row < 3; row++)
@@ -67,7 +120,7 @@ void drawGrid()
             int boxEndX = boxX + cellSize;
             int boxEndY = boxY + cellSize;
 
-            grid[itemsIndex] = {boxX, boxY, boxEndX, boxEndY};
+            grid[itemsIndex] = *new GridCell(boxX, boxY, cellSize, cellSize);
             itemsIndex++;
         }
     }
@@ -76,11 +129,8 @@ void drawGrid()
     {
         for (int row = 0; row < 3; row++, itemIndex++)
         {
-            Rect rect = grid[itemIndex];
-            int deltaX = pressedDetails.x;
-            int deltaY = pressedDetails.y;
-
-            if (deltaX > rect.x && deltaX < rect.xEnd && deltaY > rect.y && deltaY < rect.yEnd)
+            GridCell rect = grid[itemIndex];
+            if (rect.pointInRect(pressedDetails.x, pressedDetails.y))
             {
                 Serial.printf("Pressed Item! Row: %d, Col: %d \n", row, col);
                 highlighted = itemIndex;
@@ -92,7 +142,7 @@ void drawGrid()
     {
         for (int row = 0; row < 3; row++)
         {
-            Rect rect = grid[index];
+            GridCell rect = grid[index];
 
             if (index == highlighted)
             {
@@ -106,6 +156,8 @@ void drawGrid()
             index++;
         }
     }
+
+    Serial.println("Render Screen!");
 
     M5.Display.display();
 }
