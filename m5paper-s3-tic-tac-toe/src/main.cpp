@@ -29,15 +29,6 @@ void setup(void)
     display.setRotation(0);
 
     display.setEpdMode(epd_mode_t::epd_fastest);
-
-    //   if (display.isEPD())
-    //   {
-    //     display.setEpdMode(epd_mode_t::epd_fastest);
-    //   }
-    //   if (display.width() < display.height())
-    //   {
-    //     display.setRotation(display.getRotation() ^ 1);
-    //   }
 }
 
 void loop(void)
@@ -55,10 +46,6 @@ void loop(void)
             display.drawRect(offset + row * (cellSize + offset), offset + col * (cellSize + offset), cellSize, cellSize, color);
         }
     }
-
-    // display.drawRect(10, 10, 120, 120, color);
-    // display.drawRect(10, 10 + 120 + 10, 120, 120, color);
-    // display.drawRect(10, 10 + 120 + 10 + 120 + 10, 120, 120, color);
 
     display.display();
 }
