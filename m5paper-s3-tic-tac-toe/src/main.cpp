@@ -1,35 +1,64 @@
-#include <M5Unified.h>
+
 #include <M5GFX.h>
+M5GFX display;
 
-void setup() {
-  M5.begin();
-  M5.Display.setRotation(0);
-  M5.Display.setFont(&fonts::FreeMonoBold18pt7b);
+// #include <M5UnitOLED.h>
+// M5UnitOLED display; // default setting
+// M5UnitOLED display ( 21, 22, 400000 ); // SDA, SCL, FREQ
 
-  M5.Display.setCursor(0, 200);
+// #include <M5UnitLCD.h>
+// M5UnitLCD display;  // default setting
+// M5UnitLCD display  ( 21, 22, 400000 ); // SDA, SCL, FREQ
 
-  M5.Display.print("    PaperS3 Realtime\n");
-  M5.Display.print("     Battery Status\n\n\n");
-  M5.Display.print(" Battery Charging:\n\n");
-  M5.Display.print(" Battery    Level:\n\n");
-  M5.Display.print(" Battery  Voltage:\n\n");
+// #include <M5UnitGLASS2.h>
+// M5UnitGLASS2 display;  // default setting
+// M5UnitGLASS2 display ( 21, 22, 400000 ); // SDA, SCL, FREQ
+
+// #include <M5AtomDisplay.h>
+// M5AtomDisplay display;
+
+static constexpr size_t BAR_COUNT = 64;
+static int max_y[BAR_COUNT];
+static int prev_y[BAR_COUNT];
+static uint32_t colors[BAR_COUNT];
+
+void setup(void)
+{
+    display.init();
+    display.startWrite();
+    display.setRotation(0);
+
+    display.setEpdMode(epd_mode_t::epd_fastest);
+
+    //   if (display.isEPD())
+    //   {
+    //     display.setEpdMode(epd_mode_t::epd_fastest);
+    //   }
+    //   if (display.width() < display.height())
+    //   {
+    //     display.setRotation(display.getRotation() ^ 1);
+    //   }
 }
 
-void loop() {
-  M5.update();
+void loop(void)
+{
+    display.waitDisplay();
 
-  bool    isCharging     = M5.Power.isCharging();
-  int32_t batteryLevel   = M5.Power.getBatteryLevel();    // 0 - 100 %
-  int16_t batteryVoltage = M5.Power.getBatteryVoltage();  // unit: mV
+    static uint32_t color = display.color888(0, 0, 0);
+    static uint32_t offset = 15;
+    static uint32_t cellSize = 160;
 
-  M5.Display.setCursor(380, 340);
-  M5.Display.printf("%s \n\n", isCharging ? "Yes" : "No");
+    for (int row = 0; row < 3; row++)
+    {
+        for (int col = 0; col < 3; col++)
+        {
+            display.drawRect(offset + row * (cellSize + offset), offset + col * (cellSize + offset), cellSize, cellSize, color);
+        }
+    }
 
-  M5.Display.setCursor(380, 410);
-  M5.Display.printf("%d %%  \n\n", batteryLevel);
+    // display.drawRect(10, 10, 120, 120, color);
+    // display.drawRect(10, 10 + 120 + 10, 120, 120, color);
+    // display.drawRect(10, 10 + 120 + 10 + 120 + 10, 120, 120, color);
 
-  M5.Display.setCursor(380, 480);
-  M5.Display.printf("%d mV   \n\n", batteryVoltage);
-
-  delay(2000);
-} 
+    display.display();
+}
