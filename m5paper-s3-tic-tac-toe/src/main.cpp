@@ -1,51 +1,111 @@
 
+#include <M5Unified.h>
 #include <M5GFX.h>
-M5GFX display;
 
-// #include <M5UnitOLED.h>
-// M5UnitOLED display; // default setting
-// M5UnitOLED display ( 21, 22, 400000 ); // SDA, SCL, FREQ
+m5::touch_detail_t touchDetail;
 
-// #include <M5UnitLCD.h>
-// M5UnitLCD display;  // default setting
-// M5UnitLCD display  ( 21, 22, 400000 ); // SDA, SCL, FREQ
+bool pressHandled = false;
+m5::touch_detail_t pressedDetails;
 
-// #include <M5UnitGLASS2.h>
-// M5UnitGLASS2 display;  // default setting
-// M5UnitGLASS2 display ( 21, 22, 400000 ); // SDA, SCL, FREQ
+static uint32_t color = M5.Display.color888(0, 0, 0);
+static uint32_t emptyColor = M5.Display.color888(255, 255, 255);
+static uint32_t offset = 15;
+static uint32_t cellSize = 160;
 
-// #include <M5AtomDisplay.h>
-// M5AtomDisplay display;
+static int highlighted = -1;
+static bool isStateChanged = true;
 
-static constexpr size_t BAR_COUNT = 64;
-static int max_y[BAR_COUNT];
-static int prev_y[BAR_COUNT];
-static uint32_t colors[BAR_COUNT];
+void drawGrid();
 
 void setup(void)
 {
-    display.init();
-    display.startWrite();
-    display.setRotation(0);
+    M5.begin();
+    M5.Display.startWrite();
+    M5.Display.setRotation(0);
 
-    display.setEpdMode(epd_mode_t::epd_fastest);
+    M5.Display.setEpdMode(epd_mode_t::epd_fastest);
 }
 
 void loop(void)
 {
-    display.waitDisplay();
+    Serial.begin(115200);
+    M5.update();
+    touchDetail = M5.Touch.getDetail();
 
-    static uint32_t color = display.color888(0, 0, 0);
-    static uint32_t offset = 15;
-    static uint32_t cellSize = 160;
-
-    for (int row = 0; row < 3; row++)
+    if (touchDetail.isPressed())
     {
-        for (int col = 0; col < 3; col++)
+        pressedDetails = touchDetail;
+        isStateChanged = true;
+    }
+
+    if (isStateChanged && !touchDetail.isPressed())
+    {
+        drawGrid();
+        isStateChanged = false;
+    }
+}
+
+struct Rect
+{
+    int x;
+    int y;
+    int xEnd;
+    int yEnd;
+};
+
+void drawGrid()
+{
+    M5.Display.waitDisplay();
+
+    Rect grid[9];
+    for (int col = 0, itemsIndex = 0; col < 3; col++)
+    {
+        for (int row = 0; row < 3; row++)
         {
-            display.drawRect(offset + row * (cellSize + offset), offset + col * (cellSize + offset), cellSize, cellSize, color);
+            int boxX = offset + row * (cellSize + offset);
+            int boxY = offset + col * (cellSize + offset);
+            int boxEndX = boxX + cellSize;
+            int boxEndY = boxY + cellSize;
+
+            grid[itemsIndex] = {boxX, boxY, boxEndX, boxEndY};
+            itemsIndex++;
         }
     }
 
-    display.display();
+    for (int col = 0, itemIndex = 0; col < 3; col++)
+    {
+        for (int row = 0; row < 3; row++, itemIndex++)
+        {
+            Rect rect = grid[itemIndex];
+            int deltaX = pressedDetails.x;
+            int deltaY = pressedDetails.y;
+
+            if (deltaX > rect.x && deltaX < rect.xEnd && deltaY > rect.y && deltaY < rect.yEnd)
+            {
+                Serial.printf("Pressed Item! Row: %d, Col: %d \n", row, col);
+                highlighted = itemIndex;
+            }
+        }
+    }
+
+    for (int col = 0, index = 0; col < 3; col++)
+    {
+        for (int row = 0; row < 3; row++)
+        {
+            Rect rect = grid[index];
+
+            if (index == highlighted)
+            {
+                M5.Display.fillRect(rect.x, rect.y, cellSize, cellSize, color);
+            }
+            else
+            {
+                M5.Display.fillRect(rect.x, rect.y, cellSize, cellSize, emptyColor);
+            }
+            M5.Display.drawRect(rect.x, rect.y, cellSize, cellSize, color);
+            index++;
+        }
+    }
+
+    M5.Display.display();
 }
