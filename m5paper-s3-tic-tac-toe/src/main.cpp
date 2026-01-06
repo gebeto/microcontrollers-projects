@@ -43,6 +43,12 @@ void loop(void)
     }
 }
 
+void drawCross(int x, int y, int width, int height)
+{
+    M5.Display.drawWideLine(x, y, x + width, y + height, 3, color);
+    M5.Display.drawWideLine(x, y + height, x + width, y, 3, color);
+}
+
 void drawGrid()
 {
     M5.Display.waitDisplay();
@@ -53,7 +59,11 @@ void drawGrid()
 
         if (index == game.highlightedIndex)
         {
-            M5.Display.fillRect(rect.x, rect.y, cellSize, cellSize, color);
+            M5.Display.fillCircle(rect.x + cellSize / 2, rect.y + cellSize / 2, cellSize / 8 * 3, color);
+            M5.Display.fillCircle(rect.x + cellSize / 2, rect.y + cellSize / 2, cellSize / 8 * 3 - 6, emptyColor);
+
+            int innerCellSize = cellSize / 4 * 3;
+            drawCross(rect.x + innerCellSize / 3 / 2, rect.y + innerCellSize / 3 / 2, innerCellSize, innerCellSize);
         }
         else
         {
