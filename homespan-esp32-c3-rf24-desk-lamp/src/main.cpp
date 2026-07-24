@@ -1,4 +1,5 @@
 #include "HomeSpan.h"
+#include "config.h"
 #include "LED.h"
 
 #include <Wire.h>
@@ -12,12 +13,7 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 // Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
-#define REMOTE_ID 0x45b510
-#define NRF_CE_PIN 10
-#define NRF_CSN_PIN 7
-#define NRF_SCK_PIN 4
-#define NRF_MISO_PIN 5
-#define NRF_MOSI_PIN 6
+Lightbar lightbar(NRF_CE_PIN, NRF_CSN_PIN, REMOTE_ID);
 
 void setup() {
   // put your setup code here, to run once:
@@ -36,7 +32,7 @@ void setup() {
   new SpanAccessory();
     new Service::AccessoryInformation();
       new Characteristic::Identify();
-    new LED(8);
+    new LED();
   
     // if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64
     //   Serial.println(F("SSD1306 allocation failed"));

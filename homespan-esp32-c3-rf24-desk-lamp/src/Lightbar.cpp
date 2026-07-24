@@ -1,5 +1,6 @@
 #include "Lightbar.h"
 
+#include "config.h"
 #include <SPI.h>
 
 // Baseband constants, common to all devices (xiaomi_lightbar/baseband.py).

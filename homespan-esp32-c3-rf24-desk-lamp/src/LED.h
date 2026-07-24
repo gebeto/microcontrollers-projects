@@ -1,24 +1,21 @@
 #include "HomeSpan.h"
+#include "config.h"
+#include "Lightbar.h"
 
-
+extern Lightbar lightbar; // defined in main.cpp
 
 struct LED : Service::LightBulb
 {
-  int ledPin;
-  Lightbar lightbar;
   SpanCharacteristic *power;
 
-  LED(int ledPin) : Service::LightBulb()
+  LED() : Service::LightBulb()
   {
-    this->lightbar = new Lightbar(NRF_CE_PIN, NRF_CSN_PIN, REMOTE_ID)
     power = new Characteristic::On();
-    this->ledPin = ledPin;
-    pinMode(ledPin, OUTPUT);
   }
 
   boolean update()
   {
-    digitalWrite(ledPin, !power->getNewVal());
+    lightbar.on_off(); // bar is toggle-only; update() fires only on change
     return (true);
   }
 };
